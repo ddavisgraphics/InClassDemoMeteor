@@ -1,0 +1,219 @@
+<head>
+  <title>Project Manager App</title>
+</head>
+
+<body>
+    <nav class="navbar navbar-inverse navbar-fixed-top">
+        <div class="container-fluid">
+            <div class="navbar-header">
+                <a class="navbar-brand" href="#">Class Project Manager</a>
+            </div>
+            <div id="navbar">
+                <div class="login"> {{> loginButtons}} </div>
+            </div>
+        </div>
+    </nav>
+
+    <section>
+      <div class="container-fluid">
+          <div class="row">
+
+              <div class="col-sm-12 main">
+                    <h2> Projects </h2>
+                    {{#if currentUser}}
+                    {{else}}
+                    <div class="jumbotron">
+                        {{> welcome}}
+                    </div>
+                    {{/if}}
+
+                    <!-- Says that user has to be logged in -->
+                    {{#if currentUser}}
+                        <div class="crudTable">
+                             {{> usersCourses}}
+                        </div>
+
+                        <div class="courseInput">
+                            {{> insertCourse}}
+                        </div>
+
+                        <div class="projectInput">
+                            {{> insertProject}}
+                        </div>
+                    {{/if}}
+              </div>
+          </div>
+      </div>
+    </section>
+
+
+
+</body>
+
+<template name="welcome">
+  <p>Welcome, once you login you will get the ability to see, edit and modify your class projects. </p>
+</template>
+
+<template name="usersCourses">
+    {{#each courses}}
+        <div class="courses">
+                <div class="panel panel-default">
+                    <div class="panel-heading"><strong> {{name}} </strong>   <span class="pull-right"> {{teacher}}</span></div>
+                    <div class="panel-body">
+                        <div class="projects table-responsive">
+                            <table class="table table-striped">
+                                <thead>
+                                <tr>
+                                    <th> Project Name </th>
+                                    <th> Description </th>
+                                    <th> Due </th>
+                                    <th> Completed </th>
+                                    <th> </th>
+                                    <th> </th>
+                                </tr>
+                                </thead>
+                                <tbody>
+                                {{#each project}}
+                                    <tr>
+                                        <td> {{projectName}} </td>
+                                        <td> {{description}} </td>
+                                        <td> {{due}} </td>
+                                        <td> {{completed}} </td>
+                                        <td> <a href="#editProject" class="editProject" data-id="{{_id}}"><span class="glyphicon glyphicon-edit"></span></a> </td>
+                                        <td> <a href="#deleteProject" class="deleteProject" data-id="{{_id}}"><span class="glyphicon glyphicon-trash"></span></a> </td>
+                                    </tr>
+                                {{/each}}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                 <div class="actions">
+                    <a href="#deleteCourse" class="deleteCourse" data-id="{{_id}}"> Delete Course </a>
+                    <a href="#editCourse" class="editCourse" data-id="{{_id}}">Edit Course </a>
+                </div>
+
+                </div>
+        </div>
+    {{/each}}
+</template>
+
+
+<template name="insertCourse">
+{{#if edit}}
+{{#with edit}}
+<form class="form-horizontal well updateForm" role="form">
+        <h2> Update Course </h2>
+        <div class="form-group">
+            <label for="courseName"> Course Name </label>
+            <input type="text" class="form-control" name="courseName" value="{{name}}"/>
+        </div>
+
+        <div class="form-group">
+            <label for="uuid">Course Unique ID </label>
+            <input type="text" class="form-control" name="uuid" value="{{uuid}}" />
+        </div>
+
+        <div class="form-group">
+            <label for="teacher">Professor </label>
+            <input type="text" class="form-control" name="teacher" value="{{teacher}}" />
+        </div>
+
+        <button type="submit" class="btn btn-default">Submit New Course</button>
+    </form>
+{{/with}}
+{{else}}
+
+    <form class="form-horizontal well insertForm" role="form">
+    <h2> New Course </h2>
+    <div class="form-group">
+        <label for="courseName"> Course Name </label>
+        <input type="text" class="form-control" name="courseName" value="{{name}}"/>
+    </div>
+
+    <div class="form-group">
+        <label for="uuid">Course Unique ID </label>
+        <input type="text" class="form-control" name="uuid" value="{{uuid}}" />
+    </div>
+
+    <div class="form-group">
+        <label for="teacher">Professor </label>
+        <input type="text" class="form-control" name="teacher" value="{{teacher}}" />
+    </div>
+
+    <button type="submit" class="btn btn-default">Submit New Course</button>
+    </form>
+{{/if}}
+</template>
+
+<template name="insertProject">
+{{#if edit}}
+{{#with edit}}
+<form class="form-horizontal well updateForm" role="form">
+        <h2> Update Project </h2>
+        <div class="form-group">
+            <select class="input course" id="course" name="course" value="{{course}}">
+                <option value="" data-id=""> Select a Course </option>
+                {{#each courses}}
+                    <option value="{{uuid}}" data-id="{{_id}}">{{name}}</option>
+                {{/each}}
+            </select>
+        </div>
+
+        <div class="form-group">
+            <label for="projectName"> Project Name </label>
+            <input type="text" class="form-control" placeholde="projectName" name="projectName" value="{{projectName}}"/>
+        </div>
+
+        <div class="form-group checkbox">
+            <label><input type="checkbox" name="completed" class="completedCheck" value="{{completed}}"> Completed </label>
+        </div>
+
+        <div class="form-group">
+            <label for="description"> Project Description </label>
+            <textarea name="description" class="form-control" value="{{description}}"></textarea>
+        </div>
+
+        <div class="form-group">
+            <label for="dueDate"> Due Date </label>
+                <input type="text" class="form-control" id="datepicker" name="dueDate" value="{{due}}"/>
+        </div>
+
+        <button type="submit" class="btn btn-default">Update Project</button>
+    </form>
+{{/with}}
+{{else}}
+     <form class="form-horizontal well insertForm" role="form">
+        <h2> Create New Project </h2>
+        <div class="form-group">
+            <select class="input course" id="course" name="course">
+                <option value="" data-id=""> Select a Course </option>
+                {{#each courses}}
+                    <option value="{{uuid}}" data-id="{{_id}}">{{name}}</option>
+                {{/each}}
+            </select>
+        </div>
+
+        <div class="form-group">
+            <label for="projectName"> Project Name </label>
+            <input type="text" value="" class="form-control" placeholde="projectName" name="projectName"/>
+        </div>
+
+        <div class="form-group checkbox">
+            <label><input type="checkbox" name="completed" class="completedCheck"> Completed </label>
+        </div>
+
+        <div class="form-group">
+            <label for="description"> Project Description </label>
+            <textarea name="description" class="form-control"></textarea>
+        </div>
+
+        <div class="form-group">
+            <label for="dueDate"> Due Date </label>
+                <input type="text" class="form-control" id="datepicker" name="dueDate"/>
+        </div>
+
+        <button type="submit" class="btn btn-default">Submit New Project</button>
+    </form>
+{{/if}}
+</template>
